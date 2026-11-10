@@ -9,11 +9,81 @@ import {
 
 const AppContext = createContext();
 
+// Helper to parse route from URL hash
+const parseHash = () => {
+  const hash = window.location.hash.replace(/^#\/?/, '').trim();
+  if (!hash || hash === 'portal' || hash === 'beranda' || hash === 'paket-donasi' || hash === 'anak-asuh' || hash === 'tentang') {
+    return { view: 'public', tab: 'overview' };
+  }
+  if (hash.startsWith('dashboard')) {
+    const parts = hash.split('/');
+    const tabName = parts[1] || 'overview';
+    const validTabs = ['overview', 'donations', 'targets', 'donaturs', 'anak-asuh', 'karyawan'];
+    return {
+      view: 'dashboard',
+      tab: validTabs.includes(tabName) ? tabName : 'overview'
+    };
+  }
+  return { view: 'public', tab: 'overview' };
+};
+
 export const AppProvider = ({ children }) => {
-  // Navigation / View state
-  const [currentView, setCurrentView] = useState('public'); // 'public' | 'dashboard'
-  const [dashboardTab, setDashboardTab] = useState('overview'); // 'overview' | 'donations' | 'targets' | 'donaturs' | 'anak-asuh' | 'karyawan'
-  
+  // Navigation / View state based on URL Hash
+  const initialNav = parseHash();
+  const [currentView, setCurrentViewRaw] = useState(initialNav.view); // 'public' | 'dashboard'
+  const [dashboardTab, setDashboardTabRaw] = useState(initialNav.tab); // 'overview' | 'donations' | 'targets' | 'donaturs' | 'anak-asuh' | 'karyawan'
+  const [toastMessage, setToastMessage] = useState(null);
+
+  // Sync state when URL hash changes (back/forward button, direct link)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const nav = parseHash();
+      setCurrentViewRaw(nav.view);
+      setDashboardTabRaw(nav.tab);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update hash when programmatically switching views
+  const setCurrentView = (view) => {
+    if (view === 'public') {
+      window.location.hash = '#/portal';
+    } else {
+      window.location.hash = `#/dashboard/${dashboardTab || 'overview'}`;
+    }
+  };
+
+  const setDashboardTab = (tab) => {
+    window.location.hash = `#/dashboard/${tab}`;
+  };
+
+  const navigateTo = (view, tab = 'overview') => {
+    if (view === 'public') {
+      window.location.hash = '#/portal';
+    } else {
+      window.location.hash = `#/dashboard/${tab}`;
+    }
+  };
+
+  const copyToClipboard = (text, label = 'Link halaman') => {
+    navigator.clipboard.writeText(text).then(() => {
+      setToastMessage(`${label} berhasil disalin!`);
+      setTimeout(() => setToastMessage(null), 3000);
+    }).catch(() => {
+      // Fallback
+      const input = document.createElement('input');
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setToastMessage(`${label} berhasil disalin!`);
+      setTimeout(() => setToastMessage(null), 3000);
+    });
+  };
+
   // Data state with LocalStorage persistence
   const [campaigns, setCampaigns] = useState(() => {
     const saved = localStorage.getItem('gnota_campaigns');
@@ -203,10 +273,11 @@ export const AppProvider = ({ children }) => {
     setDonaturs(initialDonaturs);
     setKaryawan(initialKaryawan);
     setDonations(initialDonations);
+    window.location.hash = '#/portal';
   };
 
   // Aggregated Stats
-  const totalDonasiTerkumpul = donations.reduce((sum, d) => sum + Number(d.nominal), 0) + 750000000; // include legacy baseline
+  const totalDonasiTerkumpul = donations.reduce((sum, d) => sum + Number(d.nominal), 0) + 750000000;
   const totalTargetKeseluruhan = campaigns.reduce((sum, c) => sum + Number(c.target), 0);
   const totalAnakDidampingi = anakAsuh.filter(a => a.status === 'Didampingi').length;
   const totalAnakMenunggu = anakAsuh.filter(a => a.status === 'Menunggu Donatur').length;
@@ -218,6 +289,9 @@ export const AppProvider = ({ children }) => {
       setCurrentView,
       dashboardTab,
       setDashboardTab,
+      navigateTo,
+      toastMessage,
+      copyToClipboard,
       campaigns,
       anakAsuh,
       donaturs,

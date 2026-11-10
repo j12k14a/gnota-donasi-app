@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Heart, LayoutDashboard, Globe, ShieldCheck, Search, Users, Sparkles } from 'lucide-react';
+import { Heart, LayoutDashboard, Globe, Search, Sparkles } from 'lucide-react';
 
 export default function Navbar({ onOpenDonation, onOpenCheckReceipt }) {
-  const { currentView, setCurrentView, donations } = useApp();
+  const { currentView, dashboardTab, donations } = useApp();
 
   const pendingDonations = donations.filter(d => d.status === 'Menunggu Verifikasi').length;
 
@@ -21,9 +21,13 @@ export default function Navbar({ onOpenDonation, onOpenCheckReceipt }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo & Brand Identity */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('public')}>
-            <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-gnota-600 to-gnota-800 shadow-md ring-4 ring-gnota-100">
+          {/* Logo & Brand Identity (Link to #/portal) */}
+          <a
+            href="#/portal"
+            className="flex items-center gap-3 cursor-pointer group"
+            title="Ke Beranda Portal Donasi GNOTA"
+          >
+            <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-gnota-600 to-gnota-800 shadow-md ring-4 ring-gnota-100 group-hover:scale-105 transition-transform">
               <span className="text-white font-black text-xl tracking-tighter">GN</span>
               <span className="text-yellow-400 font-black text-xl tracking-tighter">OTA</span>
             </div>
@@ -34,7 +38,7 @@ export default function Navbar({ onOpenDonation, onOpenCheckReceipt }) {
               </div>
               <p className="text-xs text-slate-500 font-medium hidden sm:block">Gerakan Nasional Orang Tua Asuh</p>
             </div>
-          </div>
+          </a>
 
           {/* Navigation Links (Public Mode) */}
           {currentView === 'public' && (
@@ -55,36 +59,36 @@ export default function Navbar({ onOpenDonation, onOpenCheckReceipt }) {
 
           {/* Right Action: Mode Switcher & Primary CTA */}
           <div className="flex items-center gap-3">
-            {/* View Switcher Toggle (Public Portal vs Yayasan Dashboard) */}
+            {/* View Switcher Toggle with Real Hyperlinks */}
             <div className="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200 text-xs font-semibold">
-              <button
-                onClick={() => setCurrentView('public')}
+              <a
+                href="#/portal"
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                   currentView === 'public'
                     ? 'bg-white text-gnota-700 shadow-sm font-bold'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
-                title="Tampilan Website Publik Donatur"
+                title="Tampilan Halaman Website Publik Donatur (Link: #/portal)"
               >
                 <Globe className="w-3.5 h-3.5 text-gnota-600" />
                 <span className="hidden sm:inline">Portal Donatur</span>
-              </button>
+              </a>
               
-              <button
-                onClick={() => setCurrentView('dashboard')}
+              <a
+                href={`#/dashboard/${dashboardTab || 'overview'}`}
                 className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                   currentView === 'dashboard'
                     ? 'bg-gnota-700 text-white shadow-sm font-bold'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
-                title="Dashboard Pencatatan Internal Karyawan"
+                title="Buka Halaman Dashboard Staf Internal (Link: #/dashboard)"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
                 <span>Dashboard Staf</span>
                 {pendingDonations > 0 && (
                   <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-0.5 -right-0.5 ring-2 ring-white"></span>
                 )}
-              </button>
+              </a>
             </div>
 
             {/* Quick Action Button */}

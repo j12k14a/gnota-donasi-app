@@ -9,7 +9,6 @@ import {
   ArrowUpRight,
   Clock,
   CheckCircle2,
-  AlertCircle,
   FileText
 } from 'lucide-react';
 
@@ -21,8 +20,7 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
     donaturs,
     karyawan,
     totalDonasiTerkumpul,
-    totalTargetKeseluruhan,
-    setDashboardTab
+    totalTargetKeseluruhan
   } = useApp();
 
   const formatRupiah = (val) => {
@@ -34,7 +32,6 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
   };
 
   const percentage = Math.min(100, Math.round((totalDonasiTerkumpul / totalTargetKeseluruhan) * 100));
-  const pendingCount = donations.filter(d => d.status === 'Menunggu Verifikasi').length;
   const recentDonations = donations.slice(0, 5);
 
   return (
@@ -66,17 +63,18 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
         </button>
       </div>
 
-      {/* KPI Cards Grid (5 Key Entities: Donasi, Target, Donatur, Anak Asuh, Karyawan) */}
+      {/* KPI Cards Grid with Direct Hyperlinks */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         
         {/* 1. Jumlah Donasi */}
-        <div
-          onClick={() => setDashboardTab('donations')}
-          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md cursor-pointer transition-all"
+        <a
+          href="#/dashboard/donations"
+          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-gnota-300 cursor-pointer transition-all block group"
+          title="Ke Halaman Pencatatan Donasi (#/dashboard/donations)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Donasi Masuk</span>
-            <div className="p-2 rounded-xl bg-gnota-50 text-gnota-600">
+            <span className="text-xs font-bold uppercase tracking-wider group-hover:text-gnota-700 transition-colors">Donasi Masuk</span>
+            <div className="p-2 rounded-xl bg-gnota-50 text-gnota-600 group-hover:bg-gnota-100 transition-colors">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -84,16 +82,17 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
           <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
             <span className="font-bold text-gnota-600">{donations.length}</span> transaksi tercatat
           </p>
-        </div>
+        </a>
 
         {/* 2. Target Program */}
-        <div
-          onClick={() => setDashboardTab('targets')}
-          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md cursor-pointer transition-all"
+        <a
+          href="#/dashboard/targets"
+          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-amber-300 cursor-pointer transition-all block group"
+          title="Ke Halaman Target Program (#/dashboard/targets)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Target Tahunan</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+            <span className="text-xs font-bold uppercase tracking-wider group-hover:text-amber-700 transition-colors">Target Tahunan</span>
+            <div className="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors">
               <Target className="w-4 h-4" />
             </div>
           </div>
@@ -101,16 +100,17 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
           <p className="text-xs text-amber-600 font-bold mt-1">
             {percentage}% Terpenuhi
           </p>
-        </div>
+        </a>
 
         {/* 3. Donator & Ortu Asuh */}
-        <div
-          onClick={() => setDashboardTab('donaturs')}
-          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md cursor-pointer transition-all"
+        <a
+          href="#/dashboard/donaturs"
+          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-300 cursor-pointer transition-all block group"
+          title="Ke Halaman Donatur & Ortu Asuh (#/dashboard/donaturs)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Donatur / Ortu</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+            <span className="text-xs font-bold uppercase tracking-wider group-hover:text-blue-700 transition-colors">Donatur / Ortu</span>
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
               <Users className="w-4 h-4" />
             </div>
           </div>
@@ -118,16 +118,17 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
           <p className="text-xs text-slate-500 mt-1">
             {donaturs.filter(d => d.statusOrtuAsuh === 'Aktif').length} Orang Tua Asuh Aktif
           </p>
-        </div>
+        </a>
 
         {/* 4. Penerima Donasi (Anak Asuh) */}
-        <div
-          onClick={() => setDashboardTab('anak-asuh')}
-          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md cursor-pointer transition-all"
+        <a
+          href="#/dashboard/anak-asuh"
+          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-emerald-300 cursor-pointer transition-all block group"
+          title="Ke Halaman Penerima Donasi (#/dashboard/anak-asuh)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Penerima Bantuan</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <span className="text-xs font-bold uppercase tracking-wider group-hover:text-emerald-700 transition-colors">Penerima Bantuan</span>
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 transition-colors">
               <GraduationCap className="w-4 h-4" />
             </div>
           </div>
@@ -135,16 +136,17 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
           <p className="text-xs text-slate-500 mt-1">
             {anakAsuh.filter(a => a.status === 'Didampingi').length} Dibiayai • {anakAsuh.filter(a => a.status === 'Menunggu Donatur').length} Menunggu
           </p>
-        </div>
+        </a>
 
         {/* 5. Karyawan */}
-        <div
-          onClick={() => setDashboardTab('karyawan')}
-          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md cursor-pointer transition-all"
+        <a
+          href="#/dashboard/karyawan"
+          className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-purple-300 cursor-pointer transition-all block group"
+          title="Ke Halaman Staf & Karyawan (#/dashboard/karyawan)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Karyawan & Staf</span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+            <span className="text-xs font-bold uppercase tracking-wider group-hover:text-purple-700 transition-colors">Karyawan & Staf</span>
+            <div className="p-2 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-100 transition-colors">
               <Briefcase className="w-4 h-4" />
             </div>
           </div>
@@ -152,7 +154,7 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
           <p className="text-xs text-slate-500 mt-1">
             Verifikator & Lapangan
           </p>
-        </div>
+        </a>
 
       </div>
 
@@ -163,13 +165,14 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
             <h3 className="text-base font-extrabold text-slate-900">Progres Target Paket Bantuan Pendidikan</h3>
             <p className="text-xs text-slate-500">Capaian penggalangan donasi seragam & perlengkapan sekolah per jenjang</p>
           </div>
-          <button
-            onClick={() => setDashboardTab('targets')}
+          <a
+            href="#/dashboard/targets"
             className="text-xs font-bold text-gnota-700 hover:text-gnota-800 flex items-center gap-1"
+            title="Kelola Target (#/dashboard/targets)"
           >
             <span>Kelola Target</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
+          </a>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -204,13 +207,14 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
             <h3 className="text-base font-extrabold text-slate-900">Pencatatan Donasi Terbaru</h3>
             <p className="text-xs text-slate-500">Histori transaksi donasi masuk secara real-time</p>
           </div>
-          <button
-            onClick={() => setDashboardTab('donations')}
+          <a
+            href="#/dashboard/donations"
             className="text-xs font-bold text-gnota-700 hover:text-gnota-800 flex items-center gap-1"
+            title="Lihat Semua Transaksi Donasi (#/dashboard/donations)"
           >
             <span>Lihat Semua ({donations.length})</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
+          </a>
         </div>
 
         <div className="overflow-x-auto">

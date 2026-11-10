@@ -3,6 +3,7 @@ import { useApp } from './context/AppContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import ReceiptModal from './components/common/ReceiptModal';
+import { Link2, Copy, Check, ChevronRight } from 'lucide-react';
 
 // Public Components
 import HeroSection from './components/public/HeroSection';
@@ -22,7 +23,7 @@ import KaryawanManagement from './components/dashboard/KaryawanManagement';
 import ManualDonationModal from './components/dashboard/ManualDonationModal';
 
 export default function App() {
-  const { currentView, dashboardTab } = useApp();
+  const { currentView, dashboardTab, toastMessage, copyToClipboard } = useApp();
 
   // Modals state
   const [isDonationOpen, setIsDonationOpen] = useState(false);
@@ -43,6 +44,20 @@ export default function App() {
     setSelectedReceipt(donationData);
     setIsReceiptOpen(true);
   };
+
+  const tabLabels = {
+    overview: 'Ringkasan & KPI',
+    donations: 'Pencatatan Donasi',
+    targets: 'Target Program',
+    donaturs: 'Donatur & Ortu Asuh',
+    'anak-asuh': 'Penerima Donasi',
+    karyawan: 'Staf & Karyawan'
+  };
+
+  const currentTabLabel = tabLabels[dashboardTab] || 'Ringkasan & KPI';
+  const fullPageUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}${window.location.pathname}#/dashboard/${dashboardTab}`
+    : `#/dashboard/${dashboardTab}`;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
@@ -66,6 +81,37 @@ export default function App() {
           <DashboardSidebar onOpenManualDonation={() => setIsManualDonationOpen(true)} />
           
           <main className="flex-1 p-4 sm:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+            {/* Top Page Link Bar for the Current Active Menu */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 bg-white px-5 py-3 rounded-2xl border border-slate-200/90 shadow-xs">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <a href="#/portal" className="hover:text-gnota-700 transition-colors">GNOTA</a>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                <a href="#/dashboard/overview" className="hover:text-gnota-700 font-semibold text-slate-700 transition-colors">
+                  Dashboard Staf
+                </a>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                <span className="font-extrabold text-gnota-800 bg-gnota-50 px-2.5 py-1 rounded-lg border border-gnota-100">
+                  {currentTabLabel}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1 rounded-xl text-[11px] font-mono text-slate-600">
+                  <Link2 className="w-3.5 h-3.5 text-gnota-600 shrink-0" />
+                  <span className="truncate max-w-xs">{fullPageUrl}</span>
+                </div>
+                <button
+                  onClick={() => copyToClipboard(fullPageUrl, `Link ${currentTabLabel}`)}
+                  className="flex items-center gap-1.5 bg-gnota-700 hover:bg-gnota-800 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-xs transition-colors"
+                  title="Salin link langsung halaman ini untuk dibagikan"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Salin Link Halaman</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Content Tabs */}
             {dashboardTab === 'overview' && (
               <DashboardOverview
                 onOpenManualDonation={() => setIsManualDonationOpen(true)}
@@ -83,6 +129,16 @@ export default function App() {
             {dashboardTab === 'anak-asuh' && <AnakAsuhManagement />}
             {dashboardTab === 'karyawan' && <KaryawanManagement />}
           </main>
+        </div>
+      )}
+
+      {/* Floating Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold border border-slate-700 animate-bounce">
+          <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+            <Check className="w-3.5 h-3.5 stroke-[3]" />
+          </div>
+          <span>{toastMessage}</span>
         </div>
       )}
 
