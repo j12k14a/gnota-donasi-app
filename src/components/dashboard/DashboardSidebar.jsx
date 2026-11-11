@@ -14,30 +14,30 @@ import {
 } from 'lucide-react';
 
 export default function DashboardSidebar({ onOpenManualDonation }) {
-  const { dashboardTab, donations, resetAllDataToDefault, copyToClipboard } = useApp();
+  const { dashboardTab, donations, resetAllDataToDefault, copyToClipboard, navigateTo, buildPageUrl } = useApp();
 
   const pendingCount = donations.filter(d => d.status === 'Menunggu Verifikasi').length;
 
   const navItems = [
-    { id: 'overview', label: 'Ringkasan & KPI', shortLabel: 'Ringkasan', icon: LayoutDashboard, path: '#/dashboard/overview' },
-    { id: 'donations', label: 'Pencatatan Donasi', shortLabel: 'Pencatatan', icon: Receipt, path: '#/dashboard/donations', badge: pendingCount > 0 ? pendingCount : null },
-    { id: 'targets', label: 'Target Program', shortLabel: 'Target', icon: Target, path: '#/dashboard/targets' },
-    { id: 'donaturs', label: 'Donatur & Ortu Asuh', shortLabel: 'Donatur', icon: Users, path: '#/dashboard/donaturs' },
-    { id: 'anak-asuh', label: 'Penerima Donasi', shortLabel: 'Penerima', icon: GraduationCap, path: '#/dashboard/anak-asuh' },
-    { id: 'karyawan', label: 'Staf & Karyawan', shortLabel: 'Karyawan', icon: Briefcase, path: '#/dashboard/karyawan' },
+    { id: 'overview', label: 'Ringkasan & KPI', shortLabel: 'Ringkasan', icon: LayoutDashboard, path: '?page=dashboard&menu=overview' },
+    { id: 'donations', label: 'Pencatatan Donasi', shortLabel: 'Pencatatan', icon: Receipt, path: '?page=dashboard&menu=donations', badge: pendingCount > 0 ? pendingCount : null },
+    { id: 'targets', label: 'Target Program', shortLabel: 'Target', icon: Target, path: '?page=dashboard&menu=targets' },
+    { id: 'donaturs', label: 'Donatur & Ortu Asuh', shortLabel: 'Donatur', icon: Users, path: '?page=dashboard&menu=donaturs' },
+    { id: 'anak-asuh', label: 'Penerima Donasi', shortLabel: 'Penerima', icon: GraduationCap, path: '?page=dashboard&menu=anak-asuh' },
+    { id: 'karyawan', label: 'Staf & Karyawan', shortLabel: 'Karyawan', icon: Briefcase, path: '?page=dashboard&menu=karyawan' },
   ];
 
   const handleCopyLink = (e, item) => {
     e.preventDefault();
     e.stopPropagation();
-    const fullUrl = `${window.location.origin}${window.location.pathname}${item.path}`;
+    const fullUrl = buildPageUrl({ page: 'dashboard', menu: item.id });
     copyToClipboard(fullUrl, `Link Menu "${item.label}"`);
   };
 
   return (
     <>
       {/* MOBILE VIEW (Horizontal Swipeable Tab Bar at the top of Dashboard) */}
-      <div className="md:hidden w-full bg-slate-900 border-b border-slate-800 px-3 py-2.5 shrink-0 shadow-sm">
+      <div className="md:hidden w-full bg-slate-900 border-b border-slate-800 px-3 py-2.5 shrink-0 shadow-sm print:hidden">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Menu Manajemen GNOTA
@@ -61,6 +61,7 @@ export default function DashboardSidebar({ onOpenManualDonation }) {
               <a
                 key={item.id}
                 href={item.path}
+                onClick={(e) => { e.preventDefault(); navigateTo('dashboard', item.id); }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
                   isActive
                     ? 'bg-gnota-700 text-white shadow-xs font-bold ring-1 ring-gnota-400'
@@ -81,7 +82,7 @@ export default function DashboardSidebar({ onOpenManualDonation }) {
       </div>
 
       {/* DESKTOP VIEW (Classic Left Sidebar) */}
-      <aside className="hidden md:flex w-64 bg-slate-900 text-slate-300 flex-col shrink-0 min-h-[calc(100vh-5rem)] border-r border-slate-800">
+      <aside className="hidden md:flex w-64 bg-slate-900 text-slate-300 flex-col shrink-0 min-h-[calc(100vh-5rem)] border-r border-slate-800 print:hidden">
         
         {/* Quick Action Button */}
         <div className="p-4 border-b border-slate-800">
@@ -98,7 +99,7 @@ export default function DashboardSidebar({ onOpenManualDonation }) {
         <nav className="p-3 space-y-1.5 flex-1">
           <div className="flex items-center justify-between px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
             <span>MENU MANAJEMEN GNOTA</span>
-            <span className="text-[9px] font-mono text-slate-600 lowercase">direct link</span>
+            <span className="text-[9px] font-mono text-slate-600 lowercase">url param</span>
           </div>
 
           {navItems.map(item => {
@@ -109,6 +110,7 @@ export default function DashboardSidebar({ onOpenManualDonation }) {
               <div key={item.id} className="relative group flex items-center">
                 <a
                   href={item.path}
+                  onClick={(e) => { e.preventDefault(); navigateTo('dashboard', item.id); }}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     isActive
                       ? 'bg-gnota-700 text-white shadow-xs'
@@ -148,9 +150,10 @@ export default function DashboardSidebar({ onOpenManualDonation }) {
         {/* Bottom Actions */}
         <div className="p-4 border-t border-slate-800 space-y-2 text-xs">
           <a
-            href="#/portal"
+            href="?page=portal"
+            onClick={(e) => { e.preventDefault(); navigateTo('public'); }}
             className="w-full flex items-center justify-between px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-[11px]"
-            title="Ke Halaman Utama Portal Donatur (#/portal)"
+            title="Ke Halaman Utama Portal Donatur (?page=portal)"
           >
             <span>Buka Portal Donatur</span>
             <ExternalLink className="w-3.5 h-3.5" />

@@ -20,7 +20,8 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
     donaturs,
     karyawan,
     totalDonasiTerkumpul,
-    totalTargetKeseluruhan
+    totalTargetKeseluruhan,
+    navigateTo
   } = useApp();
 
   const formatRupiah = (val) => {
@@ -68,9 +69,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
         
         {/* 1. Jumlah Donasi */}
         <a
-          href="#/dashboard/donations"
+          href="?page=dashboard&menu=donations"
+          onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'donations'); }}
           className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-gnota-300 cursor-pointer transition-all block group"
-          title="Ke Halaman Pencatatan Donasi (#/dashboard/donations)"
+          title="Ke Halaman Pencatatan Donasi (?page=dashboard&menu=donations)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider group-hover:text-gnota-700 transition-colors">Donasi</span>
@@ -86,9 +88,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
 
         {/* 2. Target Program */}
         <a
-          href="#/dashboard/targets"
+          href="?page=dashboard&menu=targets"
+          onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'targets'); }}
           className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-amber-300 cursor-pointer transition-all block group"
-          title="Ke Halaman Target Program (#/dashboard/targets)"
+          title="Ke Halaman Target Program (?page=dashboard&menu=targets)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider group-hover:text-amber-700 transition-colors">Target</span>
@@ -104,9 +107,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
 
         {/* 3. Donator & Ortu Asuh */}
         <a
-          href="#/dashboard/donaturs"
+          href="?page=dashboard&menu=donaturs"
+          onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'donaturs'); }}
           className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-300 cursor-pointer transition-all block group"
-          title="Ke Halaman Donatur & Ortu Asuh (#/dashboard/donaturs)"
+          title="Ke Halaman Donatur & Ortu Asuh (?page=dashboard&menu=donaturs)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider group-hover:text-blue-700 transition-colors">Donatur</span>
@@ -122,9 +126,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
 
         {/* 4. Penerima Donasi (Anak Asuh) */}
         <a
-          href="#/dashboard/anak-asuh"
+          href="?page=dashboard&menu=anak-asuh"
+          onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'anak-asuh'); }}
           className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-emerald-300 cursor-pointer transition-all block group"
-          title="Ke Halaman Penerima Donasi (#/dashboard/anak-asuh)"
+          title="Ke Halaman Penerima Donasi (?page=dashboard&menu=anak-asuh)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider group-hover:text-emerald-700 transition-colors">Penerima</span>
@@ -140,9 +145,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
 
         {/* 5. Karyawan (Spans 2 cols on mobile) */}
         <a
-          href="#/dashboard/karyawan"
+          href="?page=dashboard&menu=karyawan"
+          onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'karyawan'); }}
           className="col-span-2 lg:col-span-1 bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-purple-300 cursor-pointer transition-all block group"
-          title="Ke Halaman Staf & Karyawan (#/dashboard/karyawan)"
+          title="Ke Halaman Staf & Karyawan (?page=dashboard&menu=karyawan)"
         >
           <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider group-hover:text-purple-700 transition-colors">Staf & Karyawan</span>
@@ -166,9 +172,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
             <p className="text-[11px] sm:text-xs text-slate-500">Capaian penggalangan donasi seragam & perlengkapan sekolah</p>
           </div>
           <a
-            href="#/dashboard/targets"
+            href="?page=dashboard&menu=targets"
+            onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'targets'); }}
             className="text-[11px] sm:text-xs font-bold text-gnota-700 hover:text-gnota-800 flex items-center gap-1 shrink-0"
-            title="Kelola Target (#/dashboard/targets)"
+            title="Kelola Target (?page=dashboard&menu=targets)"
           >
             <span>Target</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -208,9 +215,10 @@ export default function DashboardOverview({ onOpenManualDonation, onShowReceipt 
             <p className="text-[11px] sm:text-xs text-slate-500">Histori transaksi donasi masuk secara real-time</p>
           </div>
           <a
-            href="#/dashboard/donations"
+            href="?page=dashboard&menu=donations"
+            onClick={(e) => { e.preventDefault(); navigateTo('dashboard', 'donations'); }}
             className="text-[11px] sm:text-xs font-bold text-gnota-700 hover:text-gnota-800 flex items-center gap-1 shrink-0"
-            title="Lihat Semua Transaksi Donasi (#/dashboard/donations)"
+            title="Lihat Semua Transaksi Donasi (?page=dashboard&menu=donations)"
           >
             <span>Semua ({donations.length})</span>
             <ArrowUpRight className="w-3.5 h-3.5" />

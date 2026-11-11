@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Heart, Users, GraduationCap, Award, ChevronRight, TrendingUp } from 'lucide-react';
 
 export default function HeroSection({ onOpenDonation }) {
-  const { totalDonasiTerkumpul, totalTargetKeseluruhan, anakAsuh, donaturs } = useApp();
+  const { totalDonasiTerkumpul, totalTargetKeseluruhan, donaturs, navigateTo } = useApp();
 
   const percentage = Math.min(100, Math.round((totalDonasiTerkumpul / totalTargetKeseluruhan) * 100));
 
@@ -28,7 +28,7 @@ export default function HeroSection({ onOpenDonation }) {
         
         {/* Main Hero Header */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gnota-100 text-gnota-800 text-[10px] sm:text-xs font-bold tracking-wide uppercase mb-3 sm:mb-4 border border-gnota-200 shadow-xs">
+          <div className="inline-flex items-center max-w-full gap-1.5 px-3 py-1 rounded-full bg-gnota-100 text-gnota-800 text-[10px] sm:text-xs font-bold tracking-wide uppercase mb-3 sm:mb-4 border border-gnota-200 shadow-xs overflow-hidden">
             <span className="w-2 h-2 rounded-full bg-gnota-600 animate-ping shrink-0"></span>
             <span className="truncate">Program Donasi Perlengkapan Sekolah 2026/2027</span>
           </div>
@@ -50,7 +50,11 @@ export default function HeroSection({ onOpenDonation }) {
             </button>
 
             <a
-              href="#anak-asuh"
+              href="?page=portal&section=anak-asuh"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('public', 'overview', 'anak-asuh');
+              }}
               className="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold px-5 py-3 sm:py-3.5 rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all text-sm active:scale-98"
             >
               <Users className="w-4 h-4 text-gnota-600" />

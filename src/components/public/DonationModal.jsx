@@ -1,12 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   X, Check, ChevronRight, ChevronLeft, Heart, ShieldCheck,
-  CreditCard, QrCode, Building, Wallet, Sparkles, User, Mail, Phone, MessageSquare, Download
+  CreditCard, QrCode, Building, Wallet, Sparkles, User, Mail, Phone, MessageSquare, Download,
+  Printer, FileDown, Image as ImageIcon, Link2
 } from 'lucide-react';
+import {
+  formatRupiah,
+  printReceipt,
+  downloadReceiptPDF,
+  downloadReceiptPNG,
+  buildReceiptShareUrl
+} from '../../utils/receiptExport';
+
+const PACKAGE_LABELS = {
+  250000: 'Paket 1 (1 Tahun Ajaran)',
+  750000: 'Paket 2 (3 Tahun Ajaran)',
+  1500000: 'Paket 3 (6 Tahun Ajaran (Penuh))',
+  300000: 'Paket 1 (1 Tahun Ajaran)',
+  900000: 'Paket 2 (3 Tahun Ajaran (Tuntas))',
+  450000: 'Paket 1 (1 Tahun Ajaran)',
+  1350000: 'Paket 2 (3 Tahun Ajaran (Tuntas))',
+};
 
 export default function DonationModal({ isOpen, onClose, initialConfig, onShowReceipt }) {
-  const { campaigns, anakAsuh, addDonation } = useApp();
+  const { anakAsuh, addDonation, syncUrlParams, buildPageUrl, copyToClipboard } = useApp();
+  const bodyRef = useRef(null);
 
   const [step, setStep] = useState(1);
 
@@ -31,43 +50,113 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
   const [paymentMethod, setPaymentMethod] = useState('QRIS');
   const [isProcessing, setIsProcessing] = useState(false);
   const [createdDonation, setCreatedDonation] = useState(null);
+  const [appliedConfig, setAppliedConfig] = useState(null);
 
-  // Pre-fill if opened with initial config
+  // Pre-fill setiap kali modal dibuka atau initialConfig berubah
   useEffect(() => {
+    if (!isOpen) {
+      setAppliedConfig(null);
+      return;
+    }
+
+    setCreatedDonation(null);
+    setCustomNominal('');
+
     if (initialConfig) {
-      if (initialConfig.program) setSelectedProgram(initialConfig.program);
-      if (initialConfig.jenjang) setSelectedJenjang(initialConfig.jenjang);
-      if (initialConfig.defaultNominal) {
-        setNominal(initialConfig.defaultNominal);
-        setSelectedPackageName(`Paket Donasi (${formatRupiah(initialConfig.defaultNominal)})`);
+      const initStep = Math.min(4, Math.max(1, Number(initialConfig.step) || 1));
+      setStep(initStep);
+
+      const resolvedJenjang = initialConfig.child?.jenjang || initialConfig.jenjang || 'SD';
+      setSelectedJenjang(resolvedJenjang);
+
+      if (initialConfig.program) {
+        setSelectedProgram(initialConfig.program);
+      } else if (resolvedJenjang === 'SMP') {
+        setSelectedProgram('Satu Demi Satu untuk SMP');
+      } else if (resolvedJenjang === 'SMA/SMK') {
+        setSelectedProgram('Satu Demi Satu untuk SMA/SMK');
+      } else {
+        setSelectedProgram('Satu Demi Satu untuk SD');
       }
+
+      if (initialConfig.defaultNominal) {
+        const nom = Number(initialConfig.defaultNominal);
+        setNominal(nom);
+        if (PACKAGE_LABELS[nom]) {
+          setCustomNominal('');
+          setSelectedPackageName(PACKAGE_LABELS[nom]);
+        } else {
+          setCustomNominal(String(nom));
+          setSelectedPackageName(`Donasi Kustom (${formatRupiah(nom)})`);
+        }
+      } else {
+        const fallbackNom = resolvedJenjang === 'SMP' ? 300000 : resolvedJenjang === 'SMA/SMK' ? 450000 : 250000;
+        setNominal(fallbackNom);
+        setSelectedPackageName(PACKAGE_LABELS[fallbackNom] || 'Paket 1 (1 Tahun Ajaran)');
+      }
+
       if (initialConfig.child) {
         setAssignmentType('manual');
         setSelectedChildId(initialConfig.child.id);
-        setSelectedJenjang(initialConfig.child.jenjang);
-        if (initialConfig.child.jenjang === 'SD') {
-          setSelectedProgram('Satu Demi Satu untuk SD');
-          setNominal(250000);
-        } else if (initialConfig.child.jenjang === 'SMP') {
-          setSelectedProgram('Satu Demi Satu untuk SMP');
-          setNominal(300000);
-        } else {
-          setSelectedProgram('Satu Demi Satu untuk SMA/SMK');
-          setNominal(450000);
-        }
+      } else {
+        setAssignmentType('auto');
+        setSelectedChildId('');
       }
+    } else {
+      setStep(1);
+      setSelectedProgram('Satu Demi Satu untuk SD');
+      setSelectedJenjang('SD');
+      setNominal(250000);
+      setSelectedPackageName('Paket 1 (1 Tahun Ajaran)');
+      setAssignmentType('auto');
+      setSelectedChildId('');
     }
-  }, [initialConfig]);
+
+    setAppliedConfig(initialConfig || '__DEFAULT__');
+  }, [isOpen, initialConfig]);
+
+  // Reset scroll ke atas saat pindah langkah
+  useEffect(() => {
+    if (isOpen && bodyRef.current) {
+      bodyRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [step, isOpen]);
+
+  // Sinkronkan pilihan langkah, jenjang, nominal, dan anak asuh ke URL Parameter secara real-time
+  useEffect(() => {
+    const expectedConfig = initialConfig || '__DEFAULT__';
+    if (!isOpen || appliedConfig !== expectedConfig) return;
+    const effectiveNominal = customNominal ? Number(customNominal) : nominal;
+    const updates = {
+      page: 'portal',
+      donasi: '1',
+      jenjang: selectedJenjang,
+      nominal: effectiveNominal,
+      step: String(step),
+      anak: assignmentType === 'manual' && selectedChildId ? selectedChildId : undefined,
+    };
+    if (step === 5 && createdDonation) {
+      updates.kuitansi = createdDonation.id;
+      updates.donatur = createdDonation.donaturNama;
+      updates.program = createdDonation.program;
+      updates.paket = createdDonation.paketNama;
+      updates.metode = createdDonation.metode;
+      updates.tgl = createdDonation.tanggal;
+      updates.status = createdDonation.status;
+    }
+    syncUrlParams(updates, { replace: true });
+  }, [isOpen, appliedConfig, initialConfig, step, selectedJenjang, nominal, customNominal, assignmentType, selectedChildId, createdDonation]);
 
   if (!isOpen) return null;
 
-  const formatRupiah = (val) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(val);
-  };
+  const currentDonationUrl = buildPageUrl({
+    page: 'portal',
+    donasi: '1',
+    jenjang: selectedJenjang,
+    nominal: customNominal ? Number(customNominal) : nominal,
+    anak: assignmentType === 'manual' && selectedChildId ? selectedChildId : undefined,
+    step: String(Math.min(step, 4)),
+  });
 
   const handleNext = () => {
     if (step === 3) {
@@ -93,7 +182,6 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
     if (assignmentType === 'manual' && selectedChildId) {
       targetChild = anakAsuh.find(a => a.id === selectedChildId);
     } else {
-      // Find first available waiting child
       targetChild = anakAsuh.find(a => a.status === 'Menunggu Donatur' && (a.jenjang === selectedJenjang || selectedJenjang === 'Semua Jenjang'));
     }
 
@@ -116,32 +204,48 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
       setIsProcessing(false);
       setCreatedDonation(newRecord);
       setStep(5); // Success step
-    }, 1200);
+    }, 900);
   };
 
   const waitingChildren = anakAsuh.filter(a => a.status === 'Menunggu Donatur');
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
+    <div className="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
         
         {/* Header Modal */}
         <div className="bg-gradient-to-r from-gnota-700 to-gnota-900 text-white p-4 sm:p-6 relative shrink-0">
-          <button
-            onClick={onClose}
-            className="absolute top-4 sm:top-5 right-4 sm:right-5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="absolute top-3.5 sm:top-5 right-3.5 sm:right-5 flex items-center gap-1.5">
+            {step <= 4 && (
+              <button
+                type="button"
+                onClick={() => copyToClipboard(currentDonationUrl, 'Link URL Form Donasi')}
+                className="text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-2.5 py-1.5 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-colors"
+                title="Salin Link URL Parameter Paket Donasi"
+              >
+                <Link2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Salin Link</span>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 sm:p-2 rounded-full transition-colors"
+              aria-label="Tutup Form Donasi"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
           
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 pr-20">
             <span className="bg-yellow-400 text-slate-900 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
               Orang Tua Asuh GNOTA
             </span>
-            <span className="text-xs text-gnota-200">Langkah {step} dari 4</span>
+            <span className="text-xs text-gnota-200">
+              {step <= 4 ? `Langkah ${step} dari 4` : 'Selesai'}
+            </span>
           </div>
           
-          <h2 className="text-lg sm:text-2xl font-extrabold text-white pr-8">
+          <h2 className="text-lg sm:text-2xl font-extrabold text-white pr-20">
             {step === 1 && 'Pilih Paket Bantuan Pendidikan'}
             {step === 2 && 'Pilih Anak Asuh Penerima Bantuan'}
             {step === 3 && 'Data Diri Donatur / Orang Tua Asuh'}
@@ -155,7 +259,7 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
 
           {/* Stepper Dots */}
           {step <= 4 && (
-            <div className="flex items-center gap-2 mt-4">
+            <div className="flex items-center gap-2 mt-3.5">
               {[1, 2, 3, 4].map(i => (
                 <div
                   key={i}
@@ -169,7 +273,7 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
         </div>
 
         {/* Modal Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+        <div ref={bodyRef} className="p-4 sm:p-6 overflow-y-auto flex-1">
           
           {/* STEP 1: Pilih Paket */}
           {step === 1 && (
@@ -648,28 +752,57 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
                   <span className="text-slate-400">Penerima Manfaat:</span>
                   <span className="font-semibold text-slate-800">{createdDonation.anakAsuhNama}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                   <span className="text-slate-400">Status Penyaluran:</span>
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">
+                  <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded text-right">
                     Siap Disalurkan (Paket Seragam & Alat Tulis)
                   </span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              {/* Aksi Langsung Cetak / Download / Salin Link */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1 max-w-md mx-auto">
                 <button
-                  onClick={() => {
-                    onShowReceipt(createdDonation);
-                    onClose();
-                  }}
-                  className="bg-gnota-700 hover:bg-gnota-800 text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-md"
+                  onClick={() => printReceipt(createdDonation)}
+                  className="flex-1 min-w-[100px] bg-gnota-700 hover:bg-gnota-800 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Cetak</span>
+                </button>
+                <button
+                  onClick={() => downloadReceiptPDF(createdDonation)}
+                  className="flex-1 min-w-[115px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                >
+                  <FileDown className="w-3.5 h-3.5" />
+                  <span>Download PDF</span>
+                </button>
+                <button
+                  onClick={() => downloadReceiptPNG(createdDonation)}
+                  className="flex-1 min-w-[115px] bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>Download PNG</span>
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+                <button
+                  onClick={() => onShowReceipt(createdDonation)}
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Lihat & Unduh Kuitansi Resmi</span>
+                  <span>Buka Kuitansi Lengkap</span>
+                </button>
+                <button
+                  onClick={() => copyToClipboard(buildReceiptShareUrl(createdDonation), `Link Kuitansi ${createdDonation.id}`)}
+                  className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <Link2 className="w-3.5 h-3.5 text-gnota-600" />
+                  <span>Salin Link</span>
                 </button>
                 <button
                   onClick={onClose}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-xl text-xs"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-xl text-xs transition-colors"
                 >
                   Selesai
                 </button>

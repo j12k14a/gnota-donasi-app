@@ -1,18 +1,29 @@
 import React from 'react';
+import { useApp } from '../../context/AppContext';
 import { Heart, Mail, Phone, MapPin, ExternalLink, ShieldCheck } from 'lucide-react';
+import gnotaLogo from '../../assets/logo-gnota.png';
 
 export default function Footer() {
+  const { navigateTo } = useApp();
+
+  const handlePaketClick = (e) => {
+    e.preventDefault();
+    navigateTo('public', 'overview', 'paket-donasi');
+  };
+
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
+    <footer id="tentang" className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           
           {/* Col 1: About GNOTA */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gnota-600 font-black text-white text-lg">
-                GN
-              </div>
+              <img
+                src={gnotaLogo}
+                alt="Logo Resmi Yayasan GNOTA"
+                className="w-11 h-11 rounded-full object-cover bg-white shadow-md ring-2 ring-white/20 shrink-0"
+              />
               <div>
                 <h3 className="font-bold text-white text-lg tracking-tight">Yayasan GNOTA</h3>
                 <p className="text-xs text-slate-400">Gerakan Nasional Orang Tua Asuh</p>
@@ -32,31 +43,31 @@ export default function Footer() {
             <h4 className="text-white font-bold text-sm tracking-wide uppercase mb-4">Paket Donasi Anak Asuh</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <a href="#paket-donasi" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                <a href="?page=portal&section=paket-donasi" onClick={handlePaketClick} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gnota-400"></span>
                   Satu Demi Satu untuk SD (Rp 250.000 / thn)
                 </a>
               </li>
               <li>
-                <a href="#paket-donasi" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                <a href="?page=portal&section=paket-donasi" onClick={handlePaketClick} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gnota-400"></span>
                   Satu Demi Satu untuk SMP (Rp 300.000 / thn)
                 </a>
               </li>
               <li>
-                <a href="#paket-donasi" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                <a href="?page=portal&section=paket-donasi" onClick={handlePaketClick} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gnota-400"></span>
                   Satu Demi Satu untuk SMA/SMK (Rp 450.000 / thn)
                 </a>
               </li>
               <li>
-                <a href="#paket-donasi" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                <a href="?page=portal&section=paket-donasi" onClick={handlePaketClick} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gnota-400"></span>
                   Bantuan Pendidikan Daerah 3T (Pelosok)
                 </a>
               </li>
               <li>
-                <a href="#paket-donasi" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                <a href="?page=portal&section=paket-donasi" onClick={handlePaketClick} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gnota-400"></span>
                   Kemitraan CSR Perusahaan
                 </a>

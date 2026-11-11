@@ -1,40 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Search, CheckCircle2, Clock, Truck, FileText } from 'lucide-react';
+import { X, Search, FileText, FileDown } from 'lucide-react';
+import { formatRupiah, downloadReceiptPDF } from '../../utils/receiptExport';
 
-export default function CekKuitansiModal({ isOpen, onClose, onShowReceipt }) {
-  const { donations } = useApp();
-  const [searchCode, setSearchCode] = useState('');
+export default function CekKuitansiModal({ isOpen, onClose, onShowReceipt, initialKode = '' }) {
+  const { donations, syncUrlParams } = useApp();
+  const [searchCode, setSearchCode] = useState(initialKode || '');
   const [searchResult, setSearchResult] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+
+  const runLookup = (code) => {
+    const clean = String(code || '').trim();
+    if (!clean) return;
+    setHasSearched(true);
+    const found = donations.find(d =>
+      d.id.toLowerCase() === clean.toLowerCase() ||
+      (d.telepon && d.telepon.includes(clean)) ||
+      (d.email && d.email.toLowerCase() === clean.toLowerCase())
+    );
+    setSearchResult(found || null);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (initialKode) {
+      setSearchCode(initialKode);
+      runLookup(initialKode);
+    }
+  }, [isOpen, initialKode]);
 
   if (!isOpen) return null;
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setHasSearched(true);
-    const found = donations.find(d => 
-      d.id.toLowerCase() === searchCode.trim().toLowerCase() ||
-      d.telepon.includes(searchCode.trim()) ||
-      d.email.toLowerCase() === searchCode.trim().toLowerCase()
-    );
-    setSearchResult(found || null);
-  };
-
-  const formatRupiah = (val) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(val);
+    runLookup(searchCode);
+    syncUrlParams({ page: 'portal', cek_kuitansi: '1', kode: searchCode.trim() || undefined }, { replace: true });
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white p-4 sm:p-6 relative">
+        <div className="bg-slate-900 text-white p-4 sm:p-6 relative shrink-0">
           <button
             onClick={onClose}
             className="absolute top-4 sm:top-5 right-4 sm:right-5 text-slate-400 hover:text-white p-2 rounded-full"
@@ -52,7 +60,7 @@ export default function CekKuitansiModal({ isOpen, onClose, onShowReceipt }) {
         </div>
 
         {/* Search Input Form */}
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           <form onSubmit={handleSearch} className="mb-6">
             <div className="flex gap-2">
               <input
@@ -99,13 +107,20 @@ export default function CekKuitansiModal({ isOpen, onClose, onShowReceipt }) {
                     <p><strong className="text-slate-600">Penerima Manfaat:</strong> {searchResult.anakAsuhNama}</p>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={() => onShowReceipt(searchResult)}
-                      className="w-full bg-gnota-600 hover:bg-gnota-700 text-white text-xs font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-xs"
+                      className="flex-1 bg-gnota-600 hover:bg-gnota-700 text-white text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-xs"
                     >
                       <FileText className="w-4 h-4" />
-                      <span>Buka & Cetak Kuitansi Resmi</span>
+                      <span>Lihat & Cetak Kuitansi</span>
+                    </button>
+                    <button
+                      onClick={() => downloadReceiptPDF(searchResult)}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-xs"
+                    >
+                      <FileDown className="w-4 h-4" />
+                      <span>PDF</span>
                     </button>
                   </div>
                 </div>

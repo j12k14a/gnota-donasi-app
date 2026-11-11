@@ -63,28 +63,49 @@ export default function PaketDonasiSection({ onSelectPackage }) {
                 Paket bantuan berupa: <strong className="text-slate-800">baju, sepatu, tas, dan alat tulis</strong>, untuk siswa sekolah dasar dengan perhitungan setiap anak menerima:
               </p>
 
-              {/* Package Options */}
+              {/* Package Options (Clickable URL Links) */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-5 sm:mb-6">
-                <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-400 transition-colors">
+                <a
+                  href="?page=portal&donasi=1&jenjang=SD&nominal=250000&step=1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectPackage({ program: 'Satu Demi Satu untuk SD', jenjang: 'SD', defaultNominal: 250000 });
+                  }}
+                  className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-500 hover:shadow-md transition-all block cursor-pointer"
+                >
                   <div className="text-[11px] font-semibold text-slate-500">Paket 1</div>
                   <div className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Rp 250.000</div>
                   <div className="text-[10px] sm:text-[11px] text-gnota-600 font-medium">untuk 1 tahun ajaran</div>
-                </div>
+                </a>
 
-                <div className="bg-white p-3 rounded-2xl border border-gnota-300 ring-2 ring-gnota-100 shadow-xs relative">
+                <a
+                  href="?page=portal&donasi=1&jenjang=SD&nominal=750000&step=1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectPackage({ program: 'Satu Demi Satu untuk SD', jenjang: 'SD', defaultNominal: 750000 });
+                  }}
+                  className="bg-white p-3 rounded-2xl border border-gnota-300 ring-2 ring-gnota-100 shadow-xs hover:border-gnota-500 hover:shadow-md transition-all relative block cursor-pointer"
+                >
                   <span className="absolute -top-2 right-3 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">
                     FAVORIT
                   </span>
                   <div className="text-[11px] font-semibold text-slate-500">Paket 2</div>
                   <div className="text-base sm:text-lg font-bold text-gnota-700 mt-0.5">Rp 750.000</div>
                   <div className="text-[10px] sm:text-[11px] text-gnota-600 font-medium">untuk 3 tahun ajaran</div>
-                </div>
+                </a>
 
-                <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-400 transition-colors">
+                <a
+                  href="?page=portal&donasi=1&jenjang=SD&nominal=1500000&step=1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectPackage({ program: 'Satu Demi Satu untuk SD', jenjang: 'SD', defaultNominal: 1500000 });
+                  }}
+                  className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-500 hover:shadow-md transition-all block cursor-pointer"
+                >
                   <div className="text-[11px] font-semibold text-slate-500">Paket 3</div>
                   <div className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Rp 1.500.000</div>
                   <div className="text-[10px] sm:text-[11px] text-gnota-600 font-medium">untuk 6 tahun ajaran (Tuntas)</div>
-                </div>
+                </a>
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -130,19 +151,33 @@ export default function PaketDonasiSection({ onSelectPackage }) {
                 Paket bantuan berupa: <strong className="text-slate-800">baju, sepatu, tas, dan alat tulis</strong>, untuk siswa sekolah menengah tingkat pertama dengan perhitungan setiap anak menerima:
               </p>
 
-              {/* Package Options */}
+              {/* Package Options (Clickable URL Links) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mb-5 sm:mb-6 max-w-lg">
-                <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-400 transition-colors">
+                <a
+                  href="?page=portal&donasi=1&jenjang=SMP&nominal=300000&step=1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectPackage({ program: 'Satu Demi Satu untuk SMP', jenjang: 'SMP', defaultNominal: 300000 });
+                  }}
+                  className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-500 hover:shadow-md transition-all block cursor-pointer"
+                >
                   <div className="text-[11px] font-semibold text-slate-500">Paket 1</div>
                   <div className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Rp 300.000</div>
                   <div className="text-[10px] sm:text-[11px] text-gnota-600 font-medium">untuk 1 tahun ajaran</div>
-                </div>
+                </a>
 
-                <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-400 transition-colors">
+                <a
+                  href="?page=portal&donasi=1&jenjang=SMP&nominal=900000&step=1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectPackage({ program: 'Satu Demi Satu untuk SMP', jenjang: 'SMP', defaultNominal: 900000 });
+                  }}
+                  className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:border-gnota-500 hover:shadow-md transition-all block cursor-pointer"
+                >
                   <div className="text-[11px] font-semibold text-slate-500">Paket 2</div>
                   <div className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Rp 900.000</div>
                   <div className="text-[10px] sm:text-[11px] text-gnota-600 font-medium">untuk 3 tahun ajaran (Tuntas SMP)</div>
-                </div>
+                </a>
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

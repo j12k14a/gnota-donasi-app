@@ -9,62 +9,196 @@ import {
 
 const AppContext = createContext();
 
-// Helper to parse route from URL hash
-const parseHash = () => {
+const VALID_DASHBOARD_TABS = ['overview', 'donations', 'targets', 'donaturs', 'anak-asuh', 'karyawan'];
+
+/**
+ * Mengurai state rute dan modal dari URL Query Parameters (?page=...&menu=...)
+ * maupun fallback legacy hash (#/dashboard/... atau #paket-donasi).
+ */
+export const parseUrlRoute = () => {
+  const params = new URLSearchParams(window.location.search);
   const hash = window.location.hash.replace(/^#\/?/, '').trim();
-  if (!hash || hash === 'portal' || hash === 'beranda' || hash === 'paket-donasi' || hash === 'anak-asuh' || hash === 'tentang') {
-    return { view: 'public', tab: 'overview' };
-  }
+
+  const pageParam = params.get('page');
+  const menuParam = params.get('menu') || params.get('tab');
+  const sectionParam = params.get('section');
+
+  // Legacy hash compatibility (#/dashboard/donations -> view: dashboard, tab: donations)
   if (hash.startsWith('dashboard')) {
     const parts = hash.split('/');
     const tabName = parts[1] || 'overview';
-    const validTabs = ['overview', 'donations', 'targets', 'donaturs', 'anak-asuh', 'karyawan'];
     return {
       view: 'dashboard',
-      tab: validTabs.includes(tabName) ? tabName : 'overview'
+      tab: VALID_DASHBOARD_TABS.includes(tabName) ? tabName : 'overview',
+      section: null,
+      params,
+      legacyHash: true,
     };
   }
-  return { view: 'public', tab: 'overview' };
+
+  if (pageParam === 'dashboard') {
+    const tabName = menuParam || 'overview';
+    return {
+      view: 'dashboard',
+      tab: VALID_DASHBOARD_TABS.includes(tabName) ? tabName : 'overview',
+      section: null,
+      params,
+      legacyHash: false,
+    };
+  }
+
+  const knownSections = ['beranda', 'paket-donasi', 'anak-asuh', 'tentang'];
+  const resolvedSection = sectionParam || (knownSections.includes(hash) ? hash : null);
+
+  return {
+    view: 'public',
+    tab: 'overview',
+    section: resolvedSection,
+    params,
+    legacyHash: Boolean(hash),
+  };
+};
+
+/**
+ * Memperbarui URL query parameters pada address bar browser tanpa me-reload halaman.
+ */
+export const updateUrlParams = (updates = {}, { replace = false, clearModalParams = false } = {}) => {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+
+  if (clearModalParams) {
+    ['donasi', 'jenjang', 'program', 'nominal', 'anak', 'step', 'kuitansi', 'donatur', 'paket', 'metode', 'tgl', 'status', 'cek_kuitansi', 'kode', 'catat_manual'].forEach((k) => {
+      params.delete(k);
+    });
+  }
+
+  Object.entries(updates).forEach(([key, val]) => {
+    if (val === undefined || val === null || val === '') {
+      params.delete(key);
+    } else {
+      params.set(key, String(val));
+    }
+  });
+
+  if (!params.get('page')) {
+    params.set('page', 'portal');
+  }
+
+  const nextSearch = `?${params.toString()}`;
+  const nextUrl = `${window.location.pathname}${nextSearch}`;
+
+  if (window.location.search !== nextSearch || window.location.hash) {
+    if (replace) {
+      window.history.replaceState(null, '', nextUrl);
+    } else {
+      window.history.pushState(null, '', nextUrl);
+    }
+  }
 };
 
 export const AppProvider = ({ children }) => {
-  // Navigation / View state based on URL Hash
-  const initialNav = parseHash();
+  const initialNav = parseUrlRoute();
   const [currentView, setCurrentViewRaw] = useState(initialNav.view); // 'public' | 'dashboard'
-  const [dashboardTab, setDashboardTabRaw] = useState(initialNav.tab); // 'overview' | 'donations' | 'targets' | 'donaturs' | 'anak-asuh' | 'karyawan'
+  const [dashboardTab, setDashboardTabRaw] = useState(initialNav.tab); // 'overview' | ...
+  const [urlVersion, setUrlVersion] = useState(0); // memicu re-evaluasi modal berbasis URL
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Sync state when URL hash changes (back/forward button, direct link)
+  // Normalisasi awal agar address bar langsung menampilkan ?page=portal atau ?page=dashboard&menu=...
   useEffect(() => {
-    const handleHashChange = () => {
-      const nav = parseHash();
-      setCurrentViewRaw(nav.view);
-      setDashboardTabRaw(nav.tab);
+    const nav = parseUrlRoute();
+    const initialUpdates = {
+      page: nav.view === 'dashboard' ? 'dashboard' : 'portal',
+      menu: nav.view === 'dashboard' ? nav.tab : undefined,
+      section: nav.view === 'public' && nav.section ? nav.section : undefined,
     };
+    updateUrlParams(initialUpdates, { replace: true });
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    if (nav.view === 'public' && nav.section) {
+      setTimeout(() => {
+        document.getElementById(nav.section)?.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
   }, []);
 
-  // Update hash when programmatically switching views
+  // Sinkronkan state ketika tombol Back/Forward browser ditekan atau hash berubah
+  useEffect(() => {
+    const syncFromBrowser = () => {
+      const nav = parseUrlRoute();
+      setCurrentViewRaw(nav.view);
+      setDashboardTabRaw(nav.tab);
+      setUrlVersion((v) => v + 1);
+      if (nav.legacyHash) {
+        updateUrlParams(
+          {
+            page: nav.view === 'dashboard' ? 'dashboard' : 'portal',
+            menu: nav.view === 'dashboard' ? nav.tab : undefined,
+            section: nav.view === 'public' && nav.section ? nav.section : undefined,
+          },
+          { replace: true }
+        );
+      }
+    };
+
+    window.addEventListener('popstate', syncFromBrowser);
+    window.addEventListener('hashchange', syncFromBrowser);
+    return () => {
+      window.removeEventListener('popstate', syncFromBrowser);
+      window.removeEventListener('hashchange', syncFromBrowser);
+    };
+  }, []);
+
+  const syncUrlParams = (updates, options) => {
+    updateUrlParams(updates, options);
+  };
+
+  const navigateTo = (view, tab = 'overview', section = null) => {
+    if (view === 'public') {
+      setCurrentViewRaw('public');
+      updateUrlParams(
+        { page: 'portal', menu: undefined, section: section || undefined },
+        { clearModalParams: true }
+      );
+      setUrlVersion((v) => v + 1);
+      if (section) {
+        setTimeout(() => {
+          document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+        }, 60);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      const targetTab = VALID_DASHBOARD_TABS.includes(tab) ? tab : 'overview';
+      setCurrentViewRaw('dashboard');
+      setDashboardTabRaw(targetTab);
+      updateUrlParams(
+        { page: 'dashboard', menu: targetTab, section: undefined },
+        { clearModalParams: true }
+      );
+      setUrlVersion((v) => v + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const setCurrentView = (view) => {
     if (view === 'public') {
-      window.location.hash = '#/portal';
+      navigateTo('public');
     } else {
-      window.location.hash = `#/dashboard/${dashboardTab || 'overview'}`;
+      navigateTo('dashboard', dashboardTab || 'overview');
     }
   };
 
   const setDashboardTab = (tab) => {
-    window.location.hash = `#/dashboard/${tab}`;
+    navigateTo('dashboard', tab);
   };
 
-  const navigateTo = (view, tab = 'overview') => {
-    if (view === 'public') {
-      window.location.hash = '#/portal';
-    } else {
-      window.location.hash = `#/dashboard/${tab}`;
-    }
+  const buildPageUrl = (paramsObj = {}) => {
+    const params = new URLSearchParams();
+    Object.entries(paramsObj).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        params.set(k, String(v));
+      }
+    });
+    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
   };
 
   const copyToClipboard = (text, label = 'Link halaman') => {
@@ -72,7 +206,6 @@ export const AppProvider = ({ children }) => {
       setToastMessage(`${label} berhasil disalin!`);
       setTimeout(() => setToastMessage(null), 3000);
     }).catch(() => {
-      // Fallback
       const input = document.createElement('input');
       input.value = text;
       document.body.appendChild(input);
@@ -273,7 +406,7 @@ export const AppProvider = ({ children }) => {
     setDonaturs(initialDonaturs);
     setKaryawan(initialKaryawan);
     setDonations(initialDonations);
-    window.location.hash = '#/portal';
+    navigateTo('public');
   };
 
   // Aggregated Stats
@@ -290,6 +423,9 @@ export const AppProvider = ({ children }) => {
       dashboardTab,
       setDashboardTab,
       navigateTo,
+      urlVersion,
+      syncUrlParams,
+      buildPageUrl,
       toastMessage,
       copyToClipboard,
       campaigns,
