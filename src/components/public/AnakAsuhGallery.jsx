@@ -20,41 +20,41 @@ export default function AnakAsuhGallery({ onSelectChildForDonation }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-12">
           <div>
             <div className="inline-flex items-center gap-1.5 text-gnota-700 font-bold text-xs uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200 mb-2 shadow-xs">
               <UserCheck className="w-3.5 h-3.5 text-gnota-600" />
               Direktori Penerima Bantuan
             </div>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Calon Anak Asuh Menanti Uluran Tangan Anda
             </h2>
-            <p className="mt-2 text-sm text-slate-600 max-w-xl">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl">
               Pilih anak asuh yang ingin Anda dampingi secara langsung. Anda akan mendapatkan kuitansi, sertifikat pengasuhan, dan kabar kemajuan belajar mereka setiap semester.
             </p>
           </div>
 
-          {/* Search & Filter Bar */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="relative">
+          {/* Search & Filter Bar (Mobile Optimized) */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full md:w-auto">
+            <div className="relative w-full sm:w-56">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Cari nama, sekolah, kota..."
-                className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-gnota-500 focus:outline-none w-56 shadow-xs"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-gnota-500 focus:outline-none shadow-xs"
               />
             </div>
 
-            <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 shadow-xs text-xs font-semibold">
+            <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 shadow-xs text-xs font-semibold overflow-x-auto no-scrollbar max-w-full">
               {['ALL', 'SD', 'SMP', 'SMA/SMK'].map(tab => (
                 <button
                   key={tab}
                   onClick={() => setFilterJenjang(tab)}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                  className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                     filterJenjang === tab
-                      ? 'bg-gnota-600 text-white font-bold'
+                      ? 'bg-gnota-600 text-white font-bold shadow-xs'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >

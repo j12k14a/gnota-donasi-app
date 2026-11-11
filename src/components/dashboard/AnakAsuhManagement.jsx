@@ -90,12 +90,12 @@ export default function AnakAsuhManagement() {
           />
         </div>
 
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold overflow-x-auto no-scrollbar max-w-full">
           {['ALL', 'SD', 'SMP', 'SMA/SMK'].map(tab => (
             <button
               key={tab}
               onClick={() => setFilterJenjang(tab)}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                 filterJenjang === tab
                   ? 'bg-white text-gnota-800 font-bold shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -106,7 +106,7 @@ export default function AnakAsuhManagement() {
           ))}
         </div>
 
-        <div className="text-xs text-slate-500 font-medium">
+        <div className="text-xs text-slate-500 font-medium shrink-0">
           Total Terdata: <strong className="text-slate-900">{anakAsuh.length} Anak</strong>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function AnakAsuhManagement() {
       {/* Children Table */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[740px]">
             <thead>
               <tr className="bg-slate-50 text-slate-500 border-b border-slate-200 font-bold uppercase tracking-wider text-[11px]">
                 <th className="py-3.5 px-4">Anak Asuh</th>

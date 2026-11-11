@@ -122,14 +122,14 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
   const waitingChildren = anakAsuh.filter(a => a.status === 'Menunggu Donatur');
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
         
         {/* Header Modal */}
-        <div className="bg-gradient-to-r from-gnota-700 to-gnota-900 text-white p-6 relative shrink-0">
+        <div className="bg-gradient-to-r from-gnota-700 to-gnota-900 text-white p-4 sm:p-6 relative shrink-0">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+            className="absolute top-4 sm:top-5 right-4 sm:right-5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -141,7 +141,7 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
             <span className="text-xs text-gnota-200">Langkah {step} dari 4</span>
           </div>
           
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white">
+          <h2 className="text-lg sm:text-2xl font-extrabold text-white pr-8">
             {step === 1 && 'Pilih Paket Bantuan Pendidikan'}
             {step === 2 && 'Pilih Anak Asuh Penerima Bantuan'}
             {step === 3 && 'Data Diri Donatur / Orang Tua Asuh'}
@@ -149,7 +149,7 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
             {step === 5 && 'Donasi Berhasil Dicatat!'}
           </h2>
           
-          <p className="text-xs text-gnota-100 mt-1">
+          <p className="text-[11px] sm:text-xs text-gnota-100 mt-1">
             {step < 5 ? 'Setiap donasi Anda 100% dialokasikan untuk perlengkapan sekolah anak asuh.' : 'Kuitansi digital resmi telah diterbitkan oleh sistem Yayasan GNOTA.'}
           </p>
 
@@ -169,7 +169,7 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           
           {/* STEP 1: Pilih Paket */}
           {step === 1 && (
@@ -178,7 +178,7 @@ export default function DonationModal({ isOpen, onClose, initialConfig, onShowRe
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                   1. Pilih Jenjang Sekolah
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                   {[
                     { label: 'SD (Sekolah Dasar)', id: 'SD', program: 'Satu Demi Satu untuk SD' },
                     { label: 'SMP (Menengah)', id: 'SMP', program: 'Satu Demi Satu untuk SMP' },

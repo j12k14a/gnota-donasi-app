@@ -48,14 +48,14 @@ export default function ManualDonationModal({ isOpen, onClose, onShowReceipt }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-slate-900 to-gnota-900 text-white p-6 relative">
+        <div className="bg-gradient-to-r from-slate-900 to-gnota-900 text-white p-4 sm:p-6 relative">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-white/80 hover:text-white p-2 rounded-full"
+            className="absolute top-4 sm:top-5 right-4 sm:right-5 text-white/80 hover:text-white p-2 rounded-full"
           >
             <X className="w-5 h-5" />
           </button>
@@ -64,16 +64,16 @@ export default function ManualDonationModal({ isOpen, onClose, onShowReceipt }) 
               Entri Staf Internal
             </span>
           </div>
-          <h3 className="text-xl font-extrabold text-white">Pencatatan Donasi Masuk (Manual)</h3>
+          <h3 className="text-lg sm:text-xl font-extrabold text-white">Pencatatan Donasi Masuk (Manual)</h3>
           <p className="text-xs text-slate-300 mt-0.5">
             Input donasi tunai, transfer rekening yayasan, atau hibah kemitraan CSR.
           </p>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs">
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-slate-700 mb-1">Nama Donatur / Perusahaan *</label>
               <input

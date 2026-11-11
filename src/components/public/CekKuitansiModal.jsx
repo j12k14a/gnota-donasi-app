@@ -30,14 +30,14 @@ export default function CekKuitansiModal({ isOpen, onClose, onShowReceipt }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white p-6 relative">
+        <div className="bg-slate-900 text-white p-4 sm:p-6 relative">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-full"
+            className="absolute top-4 sm:top-5 right-4 sm:right-5 text-slate-400 hover:text-white p-2 rounded-full"
           >
             <X className="w-5 h-5" />
           </button>
@@ -45,14 +45,14 @@ export default function CekKuitansiModal({ isOpen, onClose, onShowReceipt }) {
             <Search className="w-4 h-4 text-amber-400" />
             <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Transparansi Donatur</span>
           </div>
-          <h3 className="text-xl font-extrabold text-white">Lacak & Cek Kuitansi Donasi</h3>
+          <h3 className="text-lg sm:text-xl font-extrabold text-white">Lacak & Cek Kuitansi Donasi</h3>
           <p className="text-xs text-slate-300 mt-1">
             Masukkan Nomor Donasi (contoh: <span className="font-mono text-yellow-300">DON-202611-001</span>), email, atau nomor HP Anda.
           </p>
         </div>
 
         {/* Search Input Form */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <form onSubmit={handleSearch} className="mb-6">
             <div className="flex gap-2">
               <input

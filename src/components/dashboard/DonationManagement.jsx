@@ -99,9 +99,9 @@ export default function DonationManagement({ onOpenManualDonation, onShowReceipt
         </div>
 
         {/* Status Filters */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold overflow-x-auto no-scrollbar max-w-full">
           {[
-            { id: 'ALL', label: 'Semua Status' },
+            { id: 'ALL', label: 'Semua' },
             { id: 'Menunggu Verifikasi', label: 'Menunggu' },
             { id: 'Terverifikasi', label: 'Terverifikasi' },
             { id: 'Disalurkan', label: 'Disalurkan' }
@@ -109,7 +109,7 @@ export default function DonationManagement({ onOpenManualDonation, onShowReceipt
             <button
               key={tab.id}
               onClick={() => setStatusFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                 statusFilter === tab.id
                   ? 'bg-white text-gnota-800 font-bold shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -121,7 +121,7 @@ export default function DonationManagement({ onOpenManualDonation, onShowReceipt
         </div>
 
         {/* Subtotal Pill */}
-        <div className="text-xs bg-gnota-50 border border-gnota-100 px-3.5 py-1.5 rounded-xl text-gnota-800">
+        <div className="text-xs bg-gnota-50 border border-gnota-100 px-3.5 py-1.5 rounded-xl text-gnota-800 shrink-0">
           <span className="text-slate-500">Total Filter: </span>
           <strong className="text-gnota-700 font-extrabold">{formatRupiah(totalFilteredAmount)}</strong>
         </div>
@@ -131,7 +131,7 @@ export default function DonationManagement({ onOpenManualDonation, onShowReceipt
       {/* Transactions Table */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[760px]">
             <thead>
               <tr className="bg-slate-50 text-slate-500 border-b border-slate-200 font-bold uppercase tracking-wider text-[11px]">
                 <th className="py-3.5 px-4">No. Kuitansi / Tanggal</th>

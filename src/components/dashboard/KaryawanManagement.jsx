@@ -67,19 +67,19 @@ export default function KaryawanManagement() {
       </div>
 
       {/* Search Header */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="relative flex-1 w-full sm:max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Cari nama karyawan, jabatan, wilayah tugas..."
+            placeholder="Cari nama karyawan, jabatan, wilayah..."
             className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-gnota-500 focus:outline-none"
           />
         </div>
 
-        <div className="text-xs font-semibold text-slate-500">
+        <div className="text-xs font-semibold text-slate-500 shrink-0">
           Total Karyawan Aktif: <strong className="text-slate-900">{karyawan.length} Petugas</strong>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function KaryawanManagement() {
         {filteredKaryawan.map(k => (
           <div
             key={k.id}
-            className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+            className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-3">

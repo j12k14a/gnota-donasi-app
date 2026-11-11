@@ -17,11 +17,11 @@ export default function ReceiptModal({ isOpen, onClose, data }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden border border-slate-200 flex flex-col">
         
         {/* Top Action Bar */}
-        <div className="bg-slate-100 px-6 py-3 border-b border-slate-200 flex items-center justify-between print:hidden">
+        <div className="bg-slate-100 px-4 sm:px-6 py-2.5 sm:py-3 border-b border-slate-200 flex items-center justify-between print:hidden">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
             <span className="text-xs font-bold text-slate-700">Kuitansi Resmi Sah GNOTA</span>
@@ -44,28 +44,28 @@ export default function ReceiptModal({ isOpen, onClose, data }) {
         </div>
 
         {/* Printable Receipt Paper */}
-        <div id="printable-receipt" className="p-8 bg-white text-slate-800">
+        <div id="printable-receipt" className="p-4 sm:p-8 bg-white text-slate-800 overflow-x-auto">
           
           {/* Header Kop Surat */}
-          <div className="border-b-2 border-gnota-800 pb-5 mb-6 flex items-start justify-between">
+          <div className="border-b-2 border-gnota-800 pb-4 sm:pb-5 mb-5 sm:mb-6 flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gnota-700 font-black text-white text-lg">
+              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gnota-700 font-black text-white text-base sm:text-lg shrink-0">
                 GN
               </div>
               <div>
-                <h1 className="font-extrabold text-lg text-gnota-900 tracking-tight leading-none">
+                <h1 className="font-extrabold text-sm sm:text-lg text-gnota-900 tracking-tight leading-none">
                   YAYASAN GERAKAN NASIONAL ORANG TUA ASUH
                 </h1>
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[9px] sm:text-[10px] text-slate-500 mt-1">
                   SK Kemenkumham RI No. AHU-0012984.AH.01.04 • Terdaftar Kemensos RI No. 343/HUK-PS/2018
                 </p>
-                <p className="text-[9px] text-slate-400">
+                <p className="text-[8px] sm:text-[9px] text-slate-400">
                   Gedung Pelindung Anak Indonesia, Jl. KH. Hasyim Ashari No. 125, Jakarta Pusat
                 </p>
               </div>
             </div>
 
-            <div className="text-right">
+            <div className="sm:text-right">
               <span className="inline-block bg-gnota-100 text-gnota-800 text-[10px] font-bold px-2 py-0.5 rounded border border-gnota-200">
                 BUKTI PENERIMAAN DONASI
               </span>

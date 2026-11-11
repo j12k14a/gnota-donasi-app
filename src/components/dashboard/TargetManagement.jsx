@@ -42,21 +42,21 @@ export default function TargetManagement() {
       </div>
 
       {/* Target Summary Banner */}
-      <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-3xl p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-3xl p-4 sm:p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Target className="w-5 h-5 text-amber-200" />
             <span className="text-xs font-bold uppercase tracking-wider text-amber-100">Akumulasi Target Keseluruhan</span>
           </div>
-          <h3 className="text-3xl font-black">{formatRupiah(totalTargetKeseluruhan)}</h3>
+          <h3 className="text-2xl sm:text-3xl font-black">{formatRupiah(totalTargetKeseluruhan)}</h3>
           <p className="text-xs text-amber-100 mt-1">
             Realisasi terkumpul saat ini: <strong className="text-white">{formatRupiah(totalDonasiTerkumpul)}</strong> ({Math.min(100, Math.round((totalDonasiTerkumpul / totalTargetKeseluruhan) * 100))}%)
           </p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-md px-5 py-3.5 rounded-2xl border border-white/20">
+        <div className="bg-white/10 backdrop-blur-md px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl border border-white/20">
           <p className="text-xs text-amber-100 font-semibold">Sisa Kebutuhan Dana:</p>
-          <p className="text-xl font-black text-white mt-0.5">
+          <p className="text-lg sm:text-xl font-black text-white mt-0.5">
             {formatRupiah(Math.max(0, totalTargetKeseluruhan - totalDonasiTerkumpul))}
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function TargetManagement() {
           const sisaTarget = Math.max(0, camp.target - camp.collected);
 
           return (
-            <div key={camp.id} className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-xs flex flex-col justify-between">
+            <div key={camp.id} className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="bg-gnota-50 text-gnota-700 text-xs font-bold px-3 py-1 rounded-full border border-gnota-100">
